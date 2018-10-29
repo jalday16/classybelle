@@ -3,8 +3,8 @@ Contributors: Planet Interactive
 Donate: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=A9437VN7R36VN
 Tags: Twitter, Stream, Tweets, Twitter OAuth, social
 Requires at least: 3.0
-Tested up to: 3.9.2
-Stable tag: 3.2
+Tested up to: 4.4.2
+Stable tag: 4.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -129,6 +129,35 @@ We've tested it and as far as we know it works great! Phew, but if you have an i
 9. Style how you like, "Your Tweets your way"
 
 == Changelog ==
+= 4.4 =
+* [Fixed] Cleanup - variable definition errors
+* [Fixed] Cleanup - oAuth port definition error
+* [Fixed] i18n localisation couple missing textdomain references (props: alysko)
+
+= 4.3 =
+* [Added] Load Plugin Text Domain. Now loads the language files.
+* [Updated] Made the permalink on the list item (Cheers Brian)
+* [Updated] Fixed Typo
+
+= 4.2 =
+* [Updated] All 4.1 updates and version number updated
+
+= 4.1 =
+* [Enhanced] Widget Admin Javascript - Enhanced user experience while completing settings and options
+* [Updated] Optimised widget admin javascript and cleaned
+* [Added] Div for follow button alignment control - Props Brian Henry
+* [Added] Permalink screen name, prevent issues with spaces - thx to Brian
+* [Added] Link widget title to Twitter account.Widget admin option added for control - thx to Brian
+* [Added] Span to mimic line break and emphasis using CSS, cleaner - thx again Brian
+
+= 4.0 =
+* [Added] Multiple Widget ready - you can now use multiple versions in widget ready areas as requested
+* [Added] Internationalisation (i18n) - Ready for impending WP [theme and plugin] Language packs. All interface text marked up ready for translations
+* [Fixed] Redeclared Function Error Fixed
+
+= 3.3 =
+* [Fixed] PHP deprecated functions (notice) added PHP 5 construction references
+
 = 3.2 =
 * [Added] SSL reference for avatar (profile pic) images for secure pages
 * [Added] Check for data retrieval, handles foreach warning (bullet proof old bug)

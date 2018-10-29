@@ -18,7 +18,7 @@ function logConsole($name, $data = NULL, $jsEval = FALSE){
  
           if ($jsEval && (is_array($data) || is_object($data)))
           {
-               $data = ''; // 'eval(' . preg_replace('#[\s\r\n\t\0\x0B]+#', '', json_encode($data)) . ')'
+               $data = 'eval(' . preg_replace('#[\s\r\n\t\0\x0B]+#', '', json_encode($data)) . ')';
                $isevaled = true;
           }
           else

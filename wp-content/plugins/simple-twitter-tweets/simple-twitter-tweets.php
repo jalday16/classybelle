@@ -4,11 +4,12 @@ Plugin Name: Simple Twitter Tweets
 Plugin URI: http://www.planet-interactive.co.uk/simple-twitter-tweets
 Description: Display last x number tweets from Twitter API stream, store locally in database to present past tweets when failure to access Twitters restrictive API occurs
 Author: Ashley Sheinwald
-Version: 3.2
+Version: 4.4
 Author URI: http://www.planet-interactive.co.uk/
+Text Domain: simple-twitter-tweets
 */
 
-/*  Copyright 2014  Ashley Sheinwald  (email : ashley@planet-interactive.co.uk)
+/*  Copyright 2014-2015  Ashley Sheinwald  (email : ashley@planet-interactive.co.uk)
 
 		This program is free software; you can redistribute it and/or modify
 		it under the terms of the GNU General Public License, version 2, as
@@ -44,7 +45,7 @@ class PI_SimpleTwitterTweets extends WP_Widget{
 		// Front End ONLY
 		if(!is_admin()){
 			// Register style sheet.
-			//add_action( 'wp_enqueue_scripts', array( &$this, 'register_stt_styles' ) );
+			add_action( 'wp_enqueue_scripts', array( &$this, 'register_stt_styles' ) );
 		}
 	}
 
@@ -118,31 +119,29 @@ class PI_SimpleTwitterTweets extends WP_Widget{
 
 		//Set up some default widget settings.
 		$defaults = array(
-				'title' 				=> __('Recent Tweets', 'pi-tweet')
-			, 'name' 				=> __('iPlanetUK', 'pi-tweet')
-			, 'numTweets' 			=> 4 // How many to display
-			, 'cacheTime' 			=> 5 // Time in minutes between updates
-			, 'consumerKey' 		=> __('xxxxxxxxxxxx', 'pi-tweet') // Consumer key
-			, 'consumerSecret' 		=> __('xxxxxxxxxxxx', 'pi-tweet') // Consumer secret
-			, 'accessToken' 		=> __('xxxxxxxxxxxx', 'pi-tweet') // Access token
-			, 'accessTokenSecret'	=> __('xxxxxxxxxxxx', 'pi-tweet') // Access token secret
+			  'title' 					=> __('Recent Tweets', 'simple-twitter-tweets')
+			, 'name' 				=> __('iPlanetUK', 'simple-twitter-tweets')
+			, 'numTweets' 			=> __(4, 'simple-twitter-tweets') // How many to display
+			, 'cacheTime' 			=> __(5, 'simple-twitter-tweets') // Time in minutes between updates
+			, 'consumerKey' 		=> __('xxxxxxxxxxxx', 'simple-twitter-tweets') // Consumer key
+			, 'consumerSecret' 	=> __('xxxxxxxxxxxx', 'simple-twitter-tweets') // Consumer secret
+			, 'accessToken' 		=> __('xxxxxxxxxxxx', 'simple-twitter-tweets') // Access token
+			, 'accessTokenSecret'	=> __('xxxxxxxxxxxx', 'simple-twitter-tweets') // Access token secret
 			, 'exclude_replies'		=> true
-			, 'twitterFollow'		=> false
+			, 'twitterFollow'			=> false
 			, 'dataShowCount'		=> false
 			, 'dataShowScreenName'	=> false
-			, 'dataLang'			=> __('en', 'pi-tweet') // Language reference
+			, 'dataLang'				=> __('en', 'simple-twitter-tweets') // Language reference
 			// STARTING NEW FOR 2.0
 			// Time
 			, 'timeRef'				=> false // false = use old full hour ref, true if selected will use hour ref as h (twitter style)
 			, 'timeAgo'				=> true // true = show ago, false will turn it off
 			// Intents
-			, 'twitterIntents'		=> false // true = Default: show Twitter Intents
+			, 'twitterIntents'			=> false // true = Default: show Twitter Intents
 			, 'twitterIntentsText'	=> false // false = Default: Show text - activate to turn off text display and use icons only
 			, 'intentColor'			=> "#999999" // Default colour, light grey
 			// Avatar
 			, 'showAvatar'			=> false // Show the avatar ?
-			, 'slider'		    	=> 'no' 
-			, 'autoplay'		    	=> 9000
 			, 'roundCorners'		=> false // Do we want rounded corners
 			, 'avatarSize'			=> "" // what size should it be - defaults to 48px
 		);
@@ -151,7 +150,7 @@ class PI_SimpleTwitterTweets extends WP_Widget{
 		$name 				= $instance['name'];
 		$numTweets 		= $instance['numTweets'];
 		$cacheTime 		= $instance['cacheTime'];
-		$consumerKey 		= trim($instance['consumerKey']);
+		$consumerKey 	= trim($instance['consumerKey']);
 		$consumerSecret 	= trim($instance['consumerSecret']);
 		$accessToken 		= trim($instance['accessToken']);
 		$accessTokenSecret	= trim($instance['accessTokenSecret']);
@@ -167,58 +166,60 @@ class PI_SimpleTwitterTweets extends WP_Widget{
 		$twitterIntentsText = $instance['twitterIntentsText'];
 		$intentColor 		= $instance['intentColor'];
 		$showAvatar 		= $instance['showAvatar'];
-		$roundCorners 		= $instance['roundCorners'];
+		$roundCorners 	= $instance['roundCorners'];
 		$avatarSize 		= $instance['avatarSize'];
-		$slider     		= $instance['slider'];
-		$autoplay     		= $instance['autoplay'];
 		?>
 
 		<?php
 			// Show error if cURL not installed - extension required for Twitter API calls
 			if (!in_array('curl', get_loaded_extensions())) {
-							echo '<p style="background-color:pink;padding:10px;border:1px solid red;"><strong>You do not have cURL installed! This is a required PHP extension to use the Twitter API: <a href="http://curl.haxx.se/docs/install.html" taget="_blank">cURL install</a></strong></p>';
+							echo '<p style="background-color:pink;padding:10px;border:1px solid red;"><strong>';
+							_e('You do not have cURL installed! This is a required PHP extension to use the Twitter API:', 'simple-twitter-tweets');
+							echo ' <a href="http://curl.haxx.se/docs/install.html" taget="_blank">';
+							_e('cURL install', 'simple-twitter-tweets');
+							echo '</a></strong></p>';
 					}
 		?>
 
 		<p>
-			<label for="<?php echo $this->get_field_id('title'); ?>">Title: <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($title); ?>" /></label>
+			<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:', 'simple-twitter-tweets') ?> <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($title); ?>" /></label>
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id('name'); ?>">Twitter Name (without @ symbol): <input class="widefat" id="<?php echo $this->get_field_id('name'); ?>" name="<?php echo $this->get_field_name('name'); ?>" type="text" value="<?php echo esc_attr($name); ?>" /></label>
+			<label for="<?php echo $this->get_field_id("titleLink"); ?>">
+				<input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id("titleLink"); ?>" name="<?php echo $this->get_field_name("titleLink"); ?>"<?php checked( (bool) $instance["titleLink"], true ); ?> />
+				<?php _e( 'Make widget title link', 'simple-twitter-tweets' ); ?>
+			</label>
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id('numTweets'); ?>">Number of Tweets: <input class="widefat" id="<?php echo $this->get_field_id('numTweets'); ?>" name="<?php echo $this->get_field_name('numTweets'); ?>" type="text" value="<?php echo esc_attr($numTweets); ?>" /></label>
+			<label for="<?php echo $this->get_field_id('name'); ?>"><?php _e('Twitter Name (without @ symbol):', 'simple-twitter-tweets') ?> <input class="widefat" id="<?php echo $this->get_field_id('name'); ?>" name="<?php echo $this->get_field_name('name'); ?>" type="text" value="<?php echo esc_attr($name); ?>" /></label>
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id('cacheTime'); ?>">Time in Minutes between updates: <input class="widefat" id="<?php echo $this->get_field_id('cacheTime'); ?>" name="<?php echo $this->get_field_name('cacheTime'); ?>" type="text" value="<?php echo esc_attr($cacheTime); ?>" /></label>
+			<label for="<?php echo $this->get_field_id('numTweets'); ?>"><?php _e('Number of Tweets:', 'simple-twitter-tweets') ?> <input class="widefat" id="<?php echo $this->get_field_id('numTweets'); ?>" name="<?php echo $this->get_field_name('numTweets'); ?>" type="text" value="<?php echo esc_attr($numTweets); ?>" /></label>
 		</p>
 		<p>
-			<input class="checkbox" type="checkbox" <?php checked( $instance['slider'], 'yes' ); ?> id="<?php echo $this->get_field_id( 'slider' ); ?>" name="<?php echo $this->get_field_name( 'slider' ); ?>" value="yes" />
-			<label for="<?php echo $this->get_field_id( 'slider' ); ?>"><?php _e('Slider', 'pi-tweet'); ?></label>
+			<label for="<?php echo $this->get_field_id('cacheTime'); ?>"><?php _e('Time in Minutes between updates:', 'simple-twitter-tweets') ?> <input class="widefat" id="<?php echo $this->get_field_id('cacheTime'); ?>" name="<?php echo $this->get_field_name('cacheTime'); ?>" type="text" value="<?php echo esc_attr($cacheTime); ?>" /></label>
 		</p>
-		<p>
-			<label for="<?php echo $this->get_field_id('autoplay'); ?>">Autoplay time for slider (in ms): <input class="widefat" id="<?php echo $this->get_field_id('autoplay'); ?>" name="<?php echo $this->get_field_name('autoplay'); ?>" type="text" value="<?php echo esc_attr($autoplay); ?>" /></label>
-		</p>
+
 		<?php // NEW FOR 2.0 ?>
 		<?php // Time display options ?>
 		<div class="secrets" style="background:#d6eef9; margin-bottom:10px;">
-			<h4 class="button-secondary" style="width:100%; text-align:center;">Twitter API settings <span style="font-size:75%;">&#9660;</span></h4>
+			<h4 class="button-secondary" style="width:100%; text-align:center;"><?php _e('Twitter API settings', 'simple-twitter-tweets') ?> <span style="font-size:75%;">&#9660;</span></h4>
 			<div style="padding:10px;">
 				<p>
-					<label for="<?php echo $this->get_field_id('consumerKey'); ?>">Consumer Key: <input class="widefat" id="<?php echo $this->get_field_id('consumerKey'); ?>" name="<?php echo $this->get_field_name('consumerKey'); ?>" type="text" value="<?php echo esc_attr($consumerKey); ?>" /></label>
+					<label for="<?php echo $this->get_field_id('consumerKey'); ?>"><?php _e('Consumer Key:', 'simple-twitter-tweets') ?> <input class="widefat" id="<?php echo $this->get_field_id('consumerKey'); ?>" name="<?php echo $this->get_field_name('consumerKey'); ?>" type="text" value="<?php echo esc_attr($consumerKey); ?>" /></label>
 				</p>
 				<p>
-					<label for="<?php echo $this->get_field_id('consumerSecret'); ?>">Consumer Secret: <input class="widefat" id="<?php echo $this->get_field_id('consumerSecret'); ?>" name="<?php echo $this->get_field_name('consumerSecret'); ?>" type="text" value="<?php echo esc_attr($consumerSecret); ?>" /></label>
+					<label for="<?php echo $this->get_field_id('consumerSecret'); ?>"><?php _e('Consumer Secret:', 'simple-twitter-tweets') ?> <input class="widefat" id="<?php echo $this->get_field_id('consumerSecret'); ?>" name="<?php echo $this->get_field_name('consumerSecret'); ?>" type="text" value="<?php echo esc_attr($consumerSecret); ?>" /></label>
 				</p>
 				<p>
-					<label for="<?php echo $this->get_field_id('accessToken'); ?>">Access Token: <input class="widefat" id="<?php echo $this->get_field_id('accessToken'); ?>" name="<?php echo $this->get_field_name('accessToken'); ?>" type="text" value="<?php echo esc_attr($accessToken); ?>" /></label>
+					<label for="<?php echo $this->get_field_id('accessToken'); ?>"><?php _e('Access Token:', 'simple-twitter-tweets') ?> <input class="widefat" id="<?php echo $this->get_field_id('accessToken'); ?>" name="<?php echo $this->get_field_name('accessToken'); ?>" type="text" value="<?php echo esc_attr($accessToken); ?>" /></label>
 				</p>
 				<p>
-					<label for="<?php echo $this->get_field_id('accessTokenSecret'); ?>">Access Token Secret: <input class="widefat" id="<?php echo $this->get_field_id('accessTokenSecret'); ?>" name="<?php echo $this->get_field_name('accessTokenSecret'); ?>" type="text" value="<?php echo esc_attr($accessTokenSecret); ?>" /></label>
+					<label for="<?php echo $this->get_field_id('accessTokenSecret'); ?>"><?php _e('Access Token Secret:', 'simple-twitter-tweets') ?> <input class="widefat" id="<?php echo $this->get_field_id('accessTokenSecret'); ?>" name="<?php echo $this->get_field_name('accessTokenSecret'); ?>" type="text" value="<?php echo esc_attr($accessTokenSecret); ?>" /></label>
 				</p>
 				<p>
 						<input class="checkbox" type="checkbox" <?php checked( isset( $instance['exclude_replies']), true ); ?> id="<?php echo $this->get_field_id( 'exclude_replies' ); ?>" name="<?php echo $this->get_field_name( 'exclude_replies' ); ?>" />
-						<label for="<?php echo $this->get_field_id( 'exclude_replies' ); ?>"><?php _e('Exclude_@replies', 'pi-tweet'); ?></label>
+						<label for="<?php echo $this->get_field_id( 'exclude_replies' ); ?>"><?php _e('Exclude_@replies', 'simple-twitter-tweets'); ?></label>
 				</p>
 			</div>
 		</div>
@@ -226,19 +227,19 @@ class PI_SimpleTwitterTweets extends WP_Widget{
 		<?php // NEW FOR 2.0 ?>
 		<?php // Avatar display options ?>
 		<div class="avatar" style="background:#d6eef9; margin-bottom:10px;">
-			<h4 class="button-secondary" style="width:100%; text-align:center;">Twitter Avatar settings <span style="font-size:75%;">&#9660;</span></h4>
+			<h4 class="button-secondary" style="width:100%; text-align:center;"><?php _e('Twitter Avatar settings', 'simple-twitter-tweets'); ?> <span style="font-size:75%;">&#9660;</span></h4>
 			<div style="padding:10px;">
-				<p>Display your Twitter Avatar: image</p>
+				<p><?php _e('Display your Twitter Avatar: image', 'simple-twitter-tweets'); ?></p>
 				<p>
 						<input class="checkbox" type="checkbox" value="true" <?php checked( ( isset( $instance['showAvatar']) && ($instance['showAvatar'] == "true") ), true ); ?> id="<?php echo $this->get_field_id( 'showAvatar' ); ?>" name="<?php echo $this->get_field_name( 'showAvatar' ); ?>" />
-						<label for="<?php echo $this->get_field_id( 'showAvatar' ); ?>"><?php _e('Show your avatar image', 'pi-tweet'); ?></label>
+						<label for="<?php echo $this->get_field_id( 'showAvatar' ); ?>"><?php _e('Show your avatar image', 'simple-twitter-tweets'); ?></label>
 				</p>
 				<p>
 						<input class="checkbox" type="checkbox" value="true" <?php checked( ( isset( $instance['roundCorners']) && ($instance['showAvatar'] == "true") ), true ); ?> id="<?php echo $this->get_field_id( 'roundCorners' ); ?>" name="<?php echo $this->get_field_name( 'roundCorners' ); ?>" />
-						<label for="<?php echo $this->get_field_id( 'roundCorners' ); ?>"><?php _e('Round avatar corners (5px)', 'pi-tweet'); ?></label>
+						<label for="<?php echo $this->get_field_id( 'roundCorners' ); ?>"><?php _e('Round avatar corners (5px)', 'simple-twitter-tweets'); ?></label>
 				</p>
 				<p>
-					<label for="<?php echo $this->get_field_id('avatarSize'); ?>">Size of Avatar (default: 48): <input class="widefat" id="<?php echo $this->get_field_id('avatarSize'); ?>" name="<?php echo $this->get_field_name('avatarSize'); ?>" type="text" value="<?php echo esc_attr($avatarSize); ?>" /><br><em>input number only</em></label>
+					<label for="<?php echo $this->get_field_id('avatarSize'); ?>"><?php _e('Size of Avatar (default: 48):', 'simple-twitter-tweets'); ?> <input class="widefat" id="<?php echo $this->get_field_id('avatarSize'); ?>" name="<?php echo $this->get_field_name('avatarSize'); ?>" type="text" value="<?php echo esc_attr($avatarSize); ?>" /><br><em><?php _e('input number only', 'simple-twitter-tweets'); ?></em></label>
 				</p>
 			</div>
 		</div>
@@ -246,15 +247,15 @@ class PI_SimpleTwitterTweets extends WP_Widget{
 		<?php // NEW FOR 2.0 ?>
 		<?php // Time display options ?>
 		<div class="modTime" style="background:#d6eef9; margin-bottom:10px;">
-			<h4 class="button-secondary" style="width:100%; text-align:center;">Time Display Options <span style="font-size:75%;">&#9660;</span></h4>
+			<h4 class="button-secondary" style="width:100%; text-align:center;"><?php _e('Time Display Options', 'simple-twitter-tweets'); ?> <span style="font-size:75%;">&#9660;</span></h4>
 			<div style="padding:10px;">
 				<p>
 						<input class="checkbox" type="checkbox" value="true" <?php checked( (isset( $instance['timeRef']) && ($instance['timeRef'] == "true") ), true ); ?> id="<?php echo $this->get_field_id( 'timeRef' ); ?>" name="<?php echo $this->get_field_name( 'timeRef' ); ?>" />
-						<label for="<?php echo $this->get_field_id( 'timeRef' ); ?>"><?php _e('Change to short time reference <br><em>h for Hour(s), d for Day(s) ... <strong>Twitter style</strong></em>', 'pi-tweet'); ?></label>
+						<label for="<?php echo $this->get_field_id( 'timeRef' ); ?>"><?php _e('Change to short time reference <br><em>h for Hour(s), d for Day(s) ... <strong>Twitter style</strong></em>', 'simple-twitter-tweets'); ?></label>
 				</p>
 				<p>
 						<input class="checkbox" type="checkbox" value="true" <?php checked( (isset( $instance['timeAgo']) && ($instance['timeAgo'] == "true") ), true ); ?> id="<?php echo $this->get_field_id( 'timeAgo' ); ?>" name="<?php echo $this->get_field_name( 'timeAgo' ); ?>" value="true" />
-						<label for="<?php echo $this->get_field_id( 'timeAgo' ); ?>"><?php _e('Show "ago" after the time', 'pi-tweet'); ?></label>
+						<label for="<?php echo $this->get_field_id( 'timeAgo' ); ?>"><?php _e('Show "ago" after the time', 'simple-twitter-tweets'); ?></label>
 				</p>
 			</div>
 		</div>
@@ -262,40 +263,40 @@ class PI_SimpleTwitterTweets extends WP_Widget{
 		<?php // NEW FOR 2.0 ?>
 		<?php // Twitter Intents and Display Options ?>
 		<div class="twitterIntents" style="background:#d6eef9; margin-bottom:10px;">
-			<h4 class="button-secondary" style="width:100%; text-align:center;">Twitter Intents <span style="font-size:75%;">&#9660;</span></h4>
+			<h4 class="button-secondary" style="width:100%; text-align:center;"><?php _e('Twitter Intents', 'simple-twitter-tweets'); ?> <span style="font-size:75%;">&#9660;</span></h4>
 			<div style="padding:10px;">
 				<p>
 						<input class="checkbox" type="checkbox" value="true" <?php checked( (isset( $instance['twitterIntents']) && ($instance['twitterIntents'] == "true") ), true ); ?> id="<?php echo $this->get_field_id( 'twitterIntents' ); ?>" name="<?php echo $this->get_field_name( 'twitterIntents' ); ?>" />
-						<label for="<?php echo $this->get_field_id( 'twitterIntents' ); ?>"><?php _e('Show Twitter Intents', 'pi-tweet'); ?></label>
+						<label for="<?php echo $this->get_field_id( 'twitterIntents' ); ?>"><?php _e('Show Twitter Intents', 'simple-twitter-tweets'); ?></label>
 				</p>
 				<p>
 						<input class="checkbox" type="checkbox" value="true" <?php checked( (isset( $instance['twitterIntentsText']) && ($instance['twitterIntentsText'] == "true") ), true ); ?> id="<?php echo $this->get_field_id( 'twitterIntentsText' ); ?>" name="<?php echo $this->get_field_name( 'twitterIntentsText' ); ?>" />
-						<label for="<?php echo $this->get_field_id( 'twitterIntentsText' ); ?>"><?php _e('Hide Twitter Intents Text <br><em>e.g. just use icons</em>', 'pi-tweet'); ?></label>
+						<label for="<?php echo $this->get_field_id( 'twitterIntentsText' ); ?>"><?php _e('Hide Twitter Intents Text <br><em>e.g. just use icons</em>', 'simple-twitter-tweets'); ?></label>
 				</p>
 				<p>
-					<label for="<?php echo $this->get_field_id('intentColor'); ?>">Intent icons colour: <input class="intentColor" id="<?php echo $this->get_field_id('intentColor'); ?>" name="<?php echo $this->get_field_name('intentColor'); ?>" type="text" value="<?php echo esc_attr($intentColor); ?>" /></label>
+					<label for="<?php echo $this->get_field_id('intentColor'); ?>"><?php _e('Intent icons colour:', 'simple-twitter-tweets'); ?> <input class="intentColor" id="<?php echo $this->get_field_id('intentColor'); ?>" name="<?php echo $this->get_field_name('intentColor'); ?>" type="text" value="<?php echo esc_attr($intentColor); ?>" /></label>
 					<div id="colorpicker"></div>
 				</p>
 			</div>
 		</div>
 
 		<div class="twitterFollow" style="background:#d6eef9;">
-			<h4 class="button-secondary" style="width:100%; text-align:center;">Twitter Follow Button <span style="font-size:75%;">&#9660;</span></h4>
+			<h4 class="button-secondary" style="width:100%; text-align:center;"><?php _e('Twitter Follow Button', 'simple-twitter-tweets'); ?> <span style="font-size:75%;">&#9660;</span></h4>
 			<div style="padding:10px;">
 				<p>
 						<input class="checkbox" type="checkbox" <?php checked( (isset( $instance['twitterFollow']) && ($instance['twitterFollow'] == "on") ), true ); ?> id="<?php echo $this->get_field_id( 'twitterFollow' ); ?>" name="<?php echo $this->get_field_name( 'twitterFollow' ); ?>" />
-						<label for="<?php echo $this->get_field_id( 'twitterFollow' ); ?>"><?php _e('Show Twitter Follow Button', 'pi-tweet'); ?></label>
+						<label for="<?php echo $this->get_field_id( 'twitterFollow' ); ?>"><?php _e('Show Twitter Follow Button', 'simple-twitter-tweets'); ?></label>
 				</p>
 				<p>
 						<input class="checkbox" type="checkbox" <?php checked( (isset( $instance['dataShowScreenName']) && ($instance['dataShowScreenName'] == "true") ), true ); ?> id="<?php echo $this->get_field_id( 'dataShowScreenName' ); ?>" name="<?php echo $this->get_field_name( 'dataShowScreenName' ); ?>" value="true" />
-						<label for="<?php echo $this->get_field_id( 'dataShowScreenName' ); ?>"><?php _e('Show Twitter Screen Name', 'pi-tweet'); ?></label>
+						<label for="<?php echo $this->get_field_id( 'dataShowScreenName' ); ?>"><?php _e('Show Twitter Screen Name', 'simple-twitter-tweets'); ?></label>
 				</p>
 				<p>
 						<input class="checkbox" type="checkbox" <?php checked( (isset( $instance['dataShowCount']) && ($instance['dataShowCount'] == "true") ), true ); ?> id="<?php echo $this->get_field_id( 'dataShowCount' ); ?>" name="<?php echo $this->get_field_name( 'dataShowCount' ); ?>" value="true" />
-						<label for="<?php echo $this->get_field_id( 'dataShowCount' ); ?>"><?php _e('Show Twitter Followers Count', 'pi-tweet'); ?></label>
+						<label for="<?php echo $this->get_field_id( 'dataShowCount' ); ?>"><?php _e('Show Twitter Followers Count', 'simple-twitter-tweets'); ?></label>
 				</p>
 				<p>
-					<label for="<?php echo $this->get_field_id('dataLang'); ?>">Language: <input class="widefat" id="<?php echo $this->get_field_id('dataLang'); ?>" name="<?php echo $this->get_field_name('dataLang'); ?>" type="text" value="<?php echo esc_attr($dataLang); ?>" /></label>
+					<label for="<?php echo $this->get_field_id('dataLang'); ?>"><?php _e('Language:', 'simple-twitter-tweets'); ?> <input class="widefat" id="<?php echo $this->get_field_id('dataLang'); ?>" name="<?php echo $this->get_field_name('dataLang'); ?>" type="text" value="<?php echo esc_attr($dataLang); ?>" /></label>
 				</p>
 			</div>
 		</div>
@@ -307,14 +308,15 @@ class PI_SimpleTwitterTweets extends WP_Widget{
 
 		//Strip tags from title and name to remove HTML
 		$instance['title'] 				= strip_tags( $new_instance['title'] );
+		$instance['titleLink'] 				= $new_instance['titleLink'];
 		$instance['name'] 				= strip_tags( $new_instance['name'] );
 		$instance['numTweets'] 		= $new_instance['numTweets'];
-		$instance['cacheTime'] 			= $new_instance['cacheTime'];
+		$instance['cacheTime'] 		= $new_instance['cacheTime'];
 		$instance['consumerKey'] 		= trim($new_instance['consumerKey']);
 		$instance['consumerSecret'] 	= trim($new_instance['consumerSecret']);
 		$instance['accessToken'] 		= trim($new_instance['accessToken']);
-		$instance['accessTokenSecret'] 	= trim($new_instance['accessTokenSecret']);
-		$instance['exclude_replies'] 		= $new_instance['exclude_replies'];
+		$instance['accessTokenSecret'] = trim($new_instance['accessTokenSecret']);
+		$instance['exclude_replies'] 	= $new_instance['exclude_replies'];
 		$instance['twitterFollow'] 		= $new_instance['twitterFollow'];
 		$instance['dataShowCount']	= $new_instance['dataShowCount'];
 		$instance['dataShowScreenName']	= $new_instance['dataShowScreenName'];
@@ -324,12 +326,10 @@ class PI_SimpleTwitterTweets extends WP_Widget{
 		$instance['timeAgo'] 			= $new_instance['timeAgo'];
 		$instance['twitterIntents'] 		= $new_instance['twitterIntents'];
 		$instance['twitterIntentsText'] 	= $new_instance['twitterIntentsText'];
-		$instance['intentColor']			= strip_tags( $new_instance['intentColor'] );
+		$instance['intentColor']		= strip_tags( $new_instance['intentColor'] );
 		$instance['showAvatar'] 		= $new_instance['showAvatar'];
 		$instance['roundCorners'] 		= $new_instance['roundCorners'];
 		$instance['avatarSize'] 			= strip_tags( $new_instance['avatarSize'] );
-		$instance['autoplay'] 			= strip_tags( $new_instance['autoplay'] );
-		$instance['slider'] 		= $new_instance['slider'];
 
 		return $instance;
 	}
@@ -341,10 +341,13 @@ class PI_SimpleTwitterTweets extends WP_Widget{
 		echo $before_widget;
 
 		//Our variables from the widget settings.
-		$PI_title 				= empty($instance['title']) ? '' : apply_filters('widget_title', $instance['title']);
+		$PI_title 				= empty($instance['title']) ? ' ' : apply_filters('widget_title', $instance['title']);
+		if( isset($instance['titleLink']) && $instance['titleLink'] == true){
+			$PI_title = '<a target="_blank" href="https://twitter.com/'.$instance['name'].'">'.$PI_title.'</a>';
+		}
 		$PI_name 				= $instance['name'];
 		$PI_numTweets 		= $instance['numTweets'];
-		$PI_cacheTime 			= @$instance['cacheTime'];
+		$PI_cacheTime 		= $instance['cacheTime'];
 
 		//Setup Twitter API OAuth tokens
 		$PI_consumerKey 		= trim($instance['consumerKey']);
@@ -357,27 +360,28 @@ class PI_SimpleTwitterTweets extends WP_Widget{
 
 		$PI_dataShowCount 	= isset( $instance['dataShowCount'] ) ? $instance['dataShowCount'] : false;
 		$PI_dataShowScreenName 	= isset( $instance['dataShowScreenName'] ) ? $instance['dataShowScreenName'] : false;
-		$PI_dataLang 			= @$instance['dataLang'];
+		$PI_dataLang 			= $instance['dataLang'];
 
 		// 2.0 updates
 		$PI_timeRef 			= isset( $instance['timeRef'] ) ? $instance['timeRef'] : false;
 		$PI_timeAgo 			= isset( $instance['timeAgo'] ) ? $instance['timeAgo'] : false;
 		$PI_twitterIntents 		= isset( $instance['twitterIntents'] ) ? $instance['twitterIntents'] : false;
 		$PI_twitterIntentsText 	= isset( $instance['twitterIntentsText'] ) ? $instance['twitterIntentsText'] : false;
-		$PI_intentColor			= @$instance['intentColor'];
+		$PI_intentColor		= $instance['intentColor'];
 
 		// Avatar
 		$PI_showAvatar 		= isset( $instance['showAvatar'] ) ? $instance['showAvatar'] : false;
 		$PI_roundCorners 		= isset( $instance['roundCorners'] ) ? $instance['roundCorners'] : false;
-		$PI_avatarSize 			= @$instance['avatarSize'];
-		$slider 			= @$instance['slider'] == 'yes';
-		$autoplay 			= @$instance['autoplay'];
+		$PI_avatarSize 			= $instance['avatarSize'];
 
 		if (!empty($PI_title))
 			echo $before_title . $PI_title . $after_title;
 
 			// START WIDGET CODE HERE
-			$random = rand(100,999);
+			?>
+
+			<ul class="tweets">
+			<?php
 			/*
 			 * Uses:
 			 * Twitter API call:
@@ -395,7 +399,7 @@ class PI_SimpleTwitterTweets extends WP_Widget{
 
 			// Get from https://dev.twitter.com/
 			// Login - Create New Application, fill in details and use required data below
-			$consumerKey 			= trim($PI_consumerKey);		// OAuth Key
+			$consumerKey 		= trim($PI_consumerKey);		// OAuth Key
 			$consumerSecret 		= trim($PI_consumerSecret);		// OAuth Secret
 			$accessToken 			= trim($PI_accessToken);		// OAuth Access Token
 			$accessTokenSecret 	= trim($PI_accessTokenSecret);	// OAuth Token Secret
@@ -410,12 +414,12 @@ class PI_SimpleTwitterTweets extends WP_Widget{
 			$timeRef 				= $PI_timeRef; // Time ref: hours or short h
 			$timeAgo 				= $PI_timeAgo; // Human Time: ago ref or not
 			$twitterIntents			= $PI_twitterIntents; // Intent on/off
-			$twitterIntentsText 		= $PI_twitterIntentsText; // Intents Text on/off
+			$twitterIntentsText 	= $PI_twitterIntentsText; // Intents Text on/off
 			$intentColor 			= $PI_intentColor; // Intent icons colour
 
 			$showAvatar 			= $PI_showAvatar;
-			$roundCorners 			= $PI_roundCorners;
-			$avatarSize 				= $PI_avatarSize;
+			$roundCorners 		= $PI_roundCorners;
+			$avatarSize 			= $PI_avatarSize;
 
 			// COMMUNITY REQUEST! (1)
 			$transName = 'list-tweets-'.$name; // Name of value in database. [added $name for multiple account use]
@@ -459,13 +463,14 @@ class PI_SimpleTwitterTweets extends WP_Widget{
 
 				for($i = 0; $i < $limitToDisplay; $i++) :
 					$tweet = $fetchedTweets[$i];
+
 						// Core info.
 						$name = $tweet->user->name;
 
 						// COMMUNITY REQUEST !!!!!! (2)
 						$screen_name = $tweet->user->screen_name;
 
-						$permalink = 'http://twitter.com/'. $name .'/status/'. $tweet->id_str;
+						$permalink = 'http://twitter.com/'. $screen_name .'/status/'. $tweet->id_str;
 						$tweet_id = $tweet->id_str;
 
 						/* Alternative image sizes method: http://dev.twitter.com/doc/get/users/profile_image/:screen_name */
@@ -510,131 +515,107 @@ class PI_SimpleTwitterTweets extends WP_Widget{
 				endif;
 			endif;
 
-
-
-			// Now display the tweets, if we can.
-			if($tweets) : 
-				if( $slider ) {
-					if ($showAvatar && ! empty($tweets[0]) ){
-						echo '<div class="twitter-slider-head">';
-						echo '<img ';
-						echo ($avatarSize) ? 'width="'.$avatarSize.'px" height="'.$avatarSize.'px"' : 'width="48px" height="48px"';
-						echo 'src="'.$tweets[0]['image'].'" alt="Tweet Avatar" class="';
-						echo ($roundCorners) ? 'a-corn':'';
-						echo '"/>';
-
-						echo '<a href="'.$tweets[0]['permalink'].'" class="">@'.$tweets[0]['name'].'</a>';
-						echo '</div>';
-					}
+			if(!function_exists('twitter_time_diff'))
+			{
+				function twitter_time_diff( $from, $to = '' ) {
+						$diff = human_time_diff($from,$to);
+						$replace = array(
+								' hour' => 'h',
+								' hours' => 'h',
+								' day' => 'd',
+								' days' => 'd',
+								' minute' => 'm',
+								' minutes' => 'm',
+								' second' => 's',
+								' seconds' => 's',
+						);
+						return strtr($diff,$replace);
 				}
-				?>
-				<ul class="tweets <?php echo ( $showAvatar ) ? 'with-avatar' : 'with-tweet-icon'; ?> <?php if( $slider ) echo 'owl-carousel carousel-' . $random; else echo 'twitter-list'; ?>">
+			}
+			// Now display the tweets, if we can.
+			if($tweets) : ?>
 					<?php foreach( (array) $tweets as $t) : // casting array to array just in case it's empty - then prevents PHP warning ?>
-							<li<?php echo ($showAvatar && ! $slider ) ? ' class="avatar"':""; ?><?php echo ($showAvatar && $avatarSize && ! $slider ) ? ' style="margin-left:'.($avatarSize+5).'px"':""; ?>>
+							<li<?php echo ($showAvatar) ? ' class="avatar"':""; ?><?php echo ($showAvatar && $avatarSize) ? ' style="margin-left:'.($avatarSize+5).'px"':""; ?>>
 								<?php
-									if ( $showAvatar && ! $slider ){
+									if ($showAvatar){
 										echo '<img ';
 										echo ($avatarSize) ? ' style="margin-left:-'.($avatarSize+5).'px"':"";
 										echo ($avatarSize) ? 'width="'.$avatarSize.'px" height="'.$avatarSize.'px"' : 'width="48px" height="48px"';
-										echo 'src="'.$t['image'].'" alt="Tweet Avatar" class="';
+										echo 'src="'.$t['image'].'" alt="';
+										_e('Tweet Avatar', 'simple-twitter-tweets');
+										echo '" class="';
 										echo ($roundCorners) ? 'a-corn':'';
 										echo '"/>';
 									}
 								?>
 								<?php echo $t['text']; ?>
-									<br/><em>
-									<?php if(!isset($screen_name)){ $screen_name = $name; }?>
-						<a href="http://www.twitter.com/<?php echo $screen_name; ?>" target="_blank" title="Follow <?php echo $name; ?> on Twitter [Opens new window]">
+									<span class="stt-em">
+						<a href="<?php echo $t['permalink']; ?>" target="_blank">
 							<?php
 
 								// Original - long time ref: hours...
 								if($timeRef == "true"){
 								// New - short Twitter style time ref: h...
-									$timeDisplay = $this->twitter_time_diff($t['time'], current_time('timestamp'));
+									$timeDisplay = twitter_time_diff($t['time'], current_time('timestamp'));
 								}else{
 									$timeDisplay = human_time_diff($t['time'], current_time('timestamp'));
 								}
 								// Ago - to show?
 								if($timeAgo == "true"){
-									$displayAgo = " ago";
+									$displayAgo = _x(' ago', 'leading space is required to keep gap from date', 'simple-twitter-tweets');
 								}else{
 									// Added to counter 'no ago var' setting undefined variable warning
 									$displayAgo = "";
 								}
 								// Use to make il8n compliant
-								printf(__('%1$s%2$s', 'notredam'), $timeDisplay, $displayAgo);
+								printf(__( '%1$s%2$s', 'simple-twitter-tweets' ), $timeDisplay, $displayAgo);
 
 							?>
 							</a>
-									</em>
+									</span>
 
 						<?php // INTENTS REF: DISPLAY OR NOT
 						if($twitterIntents == "true"){
 						?>
 						<div class="intent-meta">
-							<a href="http://twitter.com/intent/tweet?in_reply_to=<?php echo $t['tweet_id']; ?>" data-lang="en" class="in-reply-to" title="Reply" target="_blank">
+							<a href="http://twitter.com/intent/tweet?in_reply_to=<?php echo $t['tweet_id']; ?>" data-lang="en" class="in-reply-to" title="<?php _e('Reply','simple-twitter-tweets'); ?>" target="_blank">
 								<span aria-hidden="true" data-icon="&#xf079;" <?php echo ($intentColor) ? 'style="color:'.$intentColor.';"' :''; ?>></span>
-								<span <?php echo ($twitterIntentsText) ? 'class="pi-visuallyhidden"':''; ?>>Reply</span></a>
-							<a href="http://twitter.com/intent/retweet?tweet_id=<?php echo $t['tweet_id']; ?>" data-lang="en" class="retweet" title="Retweet" target="_blank">
+								<span <?php echo ($twitterIntentsText) ? 'class="pi-visuallyhidden"':''; ?>><?php _e('Reply','simple-twitter-tweets'); ?></span></a>
+							<a href="http://twitter.com/intent/retweet?tweet_id=<?php echo $t['tweet_id']; ?>" data-lang="en" class="retweet" title="<?php _e('Retweet','simple-twitter-tweets'); ?>" target="_blank">
 								<span aria-hidden="true" data-icon="&#xf112;" <?php echo ($intentColor) ? 'style="color:'.$intentColor.';"' :''; ?>></span>
-								<span <?php echo ($twitterIntentsText) ? 'class="pi-visuallyhidden"':''; ?>>Retweet</span></a>
-							<a href="http://twitter.com/intent/favorite?tweet_id=<?php echo $t['tweet_id']; ?>" data-lang="en" class="favorite" title="Favorite" target="_blank">
+								<span <?php echo ($twitterIntentsText) ? 'class="pi-visuallyhidden"':''; ?>><?php _e('Retweet','simple-twitter-tweets'); ?></span></a>
+							<a href="http://twitter.com/intent/favorite?tweet_id=<?php echo $t['tweet_id']; ?>" data-lang="en" class="favorite" title="<?php _e('Favourite','simple-twitter-tweets'); ?>" target="_blank">
 								<span aria-hidden="true" data-icon="&#xf005;" <?php echo ($intentColor) ? 'style="color:'.$intentColor.';"' :''; ?>></span>
-								<span <?php echo ($twitterIntentsText) ? 'class="pi-visuallyhidden"':''; ?>>Favorite</span></a>
+								<span <?php echo ($twitterIntentsText) ? 'class="pi-visuallyhidden"':''; ?>><?php _e('Favourite','simple-twitter-tweets'); ?></span></a>
 						</div>
 						<?php } ?>
 
 							</li>
 					<?php endforeach; ?>
-				</ul>
 
 			<?php else : ?>
-					<li>Waiting for Twitter... Once Twitter is ready they will display my Tweets again.</li>
+					<li><?php _e('Waiting for Twitter... Once Twitter is ready they will display my Tweets again.','simple-twitter-tweets'); ?></li>
 			<?php endif; ?>
-			<?php if( $slider ): ?>
-				<script type="text/javascript">
-					jQuery( document ).ready(function( $ ) {
-						$(".carousel-<?php echo $random; ?>").owlCarousel({
-				            items: 1, 
-				            itemsDesktop:1,
-				            itemsDesktopSmall:1,
-				            itemsTablet:1,
-				            itemsTabletSmall:1,
-				            autoPlay: false,
-				            pagination: false,
-				            navigation: false,
-				            autoPlay: <?php echo ($autoplay > 0) ? $autoplay : 'false'; ?>,
-				            navigationText:false
-						});
-					});
-				</script>
-			<?php endif; ?>
+			</ul>
+
 			<?php
 				// ADD Twitter follow button - to increase engagement
 				// Make it an options choice though
 			if($twitterFollow){ ?>
-				<a href="https://twitter.com/<?php echo $PI_name; ?>" class="twitter-follow-button" data-show-count="<?php echo $dataShowCount; ?>" data-show-screen-name="<?php echo $dataShowScreenName; ?>" data-lang="<?php echo $dataLang; ?>">Follow @<?php echo $PI_name; ?></a>
+				<div class="twitter-follow-container"><a href="https://twitter.com/<?php echo $PI_name; ?>" class="twitter-follow-button" data-show-count="<?php echo $dataShowCount; ?>" data-show-screen-name="<?php echo $dataShowScreenName; ?>" data-lang="<?php echo $dataLang; ?>"><?php _e('Follow','simple-twitter-tweets'); ?> @<?php echo $PI_name; ?></a></div>
 				<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 			<?php
 			}
 			// END OF WIDGET CODE HERE
 			echo $after_widget;
 		}
-		// Thanks to Andrew Tibbetts - http://wordpress.org/support/profile/andrewgtibbetts
-		function twitter_time_diff( $from, $to = '' ) {
-				$diff = human_time_diff($from,$to);
-				$replace = array(
-						' hour' => 'h',
-						' hours' => 'h',
-						' day' => 'd',
-						' days' => 'd',
-						' minute' => 'm',
-						' minutes' => 'm',
-						' second' => 's',
-						' seconds' => 's',
-				);
-				return strtr($diff,$replace);
-		}
+
 }
 add_action( 'widgets_init', create_function('', 'return register_widget("PI_SimpleTwitterTweets");') );
+
+add_action( 'plugins_loaded', 'PI_SimpleTwitterTweets_load_plugin_textdomain' );
+// Now loads language files
+function PI_SimpleTwitterTweets_load_plugin_textdomain() {
+    load_plugin_textdomain( 'simple-twitter-tweets', false, dirname(plugin_basename(__FILE__)) . '/languages/' );
+}
 ?>
